@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99996 (TeX Live 2016) (preloaded format=xelatex 2017.2.8)  9 FEB 2017 20:39
+This is XeTeX, Version 3.14159265-2.6-0.99996 (TeX Live 2016) (preloaded format=xelatex 2017.2.8)  9 FEB 2017 22:06
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1514,19 +1514,26 @@ File: lstlang1.sty 2015/06/04 1.6 listings language file
 ) [1
 
 ]
+Overfull \hbox (15.96617pt too wide) in paragraph at lines 103--105
+\EU1/FandolSong-Regular(0)/m/n/10.53937 最 近 一 次 \EU1/lmr/m/n/10.53937 commit \E
+U1/FandolSong-Regular(0)/m/n/10.53937 或 者 \EU1/lmr/m/n/10.53937 add \EU1/Fandol
+Song-Regular(0)/m/n/10.53937 的 状 态。| 如 果 改 动 已 经 提 交 到 了 暂 存 区，|  就 要 使 用[]\EU1
+/lmtt/m/n/10.53937 $ git reset HEAD \EU1/FandolFang-Regular(0)/m/n/10.53937 文件名
+或者目录名
+ []
+
 LaTeX Font Info:    Font shape `EU1/FandolSong-Regular(0)/m/sl' in size <10.539
 37> not available
 (Font)              Font shape `EU1/FandolSong-Regular(0)/m/it' tried instead o
-n input line 102.
-
-[2] (./git.aux) ) 
+n input line 105.
+[2] [3] (./git.aux) ) 
 Here is how much of TeX's memory you used:
- 23024 strings out of 493591
- 469784 string characters out of 6143547
- 452904 words of memory out of 5000000
- 26182 multiletter control sequences out of 15000+600000
- 11510 words of font info for 80 fonts, out of 8000000 for 9000
+ 23041 strings out of 493591
+ 470986 string characters out of 6143547
+ 454904 words of memory out of 5000000
+ 26198 multiletter control sequences out of 15000+600000
+ 11518 words of font info for 81 fonts, out of 8000000 for 9000
  1347 hyphenation exceptions out of 8191
  65i,6n,77p,10430b,1059s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on git.pdf (2 pages).
+Output written on git.pdf (3 pages).
