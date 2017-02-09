@@ -21,7 +21,7 @@ flexiblecolumns}
 \begin{document}
 \maketitle
 
-	\section{安装git}
+\section{安装git}
 一提到git，大佬们常说：
 \begin{myquote}
 \kaishu “Git是目前世界上最先进的分布式版本控制系统”
@@ -34,11 +34,69 @@ flexiblecolumns}
 $ git config --global user.name "YourName"
 $ git config --global user.email "email@example.com"
 \end{lstlisting}
+
 \section{创建版本库}
-在需要Git管理的目录下执行命令：\mbox{
+在需要Git管理的目录下执行命令：
 \begin{lstlisting}[language=bash]
 $ git init
 \end{lstlisting}
-}
+对于需要Git管理的目录需要使用add命令进行处理
+\begin{lstlisting}[language=bash]
+$ git add 文件名或者目录名
+\end{lstlisting}
+最后使用commit命令即可提交到版本库
+\begin{lstlisting}[language=bash]
+$ git commit -m “用于识别的附加在提交后面的消息”
+\end{lstlisting}
+
+\section{Git时光机}
+\textbf{git status}命令可以让我们时刻掌握仓库当前的状态，上面的命令告诉我们，readme.txt被修改过了，但还没有准备提交的修改。
+
+\textbf{git diff}顾名思义就是查看difference，显示的格式正是Unix通用的diff格式，可以从上面的命令输出看到，我们在第一行添加了一个“distributed”单词。
+
+当我们对文件修改后再提交时，也要经过添加新的文件的add和commit命令。
+
+\subsection{版本回退}
+在Git中，可以用git log命令查看提交的版本信息，例如在编写个笔记过程中使用的log是这样的：
+\begin{verbatim}
+commit a0a5fe4e08f77bc5bf609b27575206cb7cb1ccb2
+Author: Acinonyx Tungsten <gaoruihao@outlook.com>
+Date:   Thu Feb 9 19:54:30 2017 +0800
+
+    1
+
+commit 047711edf118019cd76d9628d3d61b6022f6b008
+Author: Acinonyx Tungsten <gaoruihao@outlook.com>
+Date:   Thu Feb 9 08:39:34 2017 +0800
+
+    add a line
+
+commit 41320d5047bf318ab067352bfaa5ce658646d188
+Author: Acinonyx Tungsten <gaoruihao@outlook.com>
+Date:   Thu Feb 9 08:33:59 2017 +0800
+
+    first time
+\end{verbatim}
+
+这样看起来比较烦的话可以用\verb！ $ git log --pretty=oneline！，得到的结果是这样的：
+\begin{verbatim}
+wolf-tungsten@wolftungsten-ThinkPad-T460p:~/NotePapers$ git log --pretty=oneline
+a0a5fe4e08f77bc5bf609b27575206cb7cb1ccb2 1
+047711edf118019cd76d9628d3d61b6022f6b008 add a line
+41320d5047bf318ab067352bfaa5ce658646d188 first time
+\end{verbatim}
+
+前面一串串的数字就是十六进制表示的版本号了（官方名称是commit id）。当我们想回退到上一个版本的时候，就可以用命令\verb!$ git reset --hard HEAD^!。其中HEAD代表当前版本，\^就代表上一个版本——以此类推\verb!$ git reset --hard HEAD^^!自然就是回退到两个版本啦。
+
+现在我们相当于从21世纪回到了19世纪，那我们要如何再从19实际回到21世纪呢？这时候刚才看起来烦人的commit id就有大用了。首先我们使用\verb!$ git reflog !命令来查看各个提交版本的commit id：
+\begin{lstlisting}[language=bash]
+wolf-tungsten@wolftungsten-ThinkPad-T460p:~/NotePapers$ git reflog
+a0a5fe4 HEAD@{0}: commit: 1
+047711e HEAD@{1}: commit: add a line
+41320d5 HEAD@{2}: commit (initial): first time
+\end{lstlisting}
+然后\verb!$ git reset --hard 047711e!，就会回到这个版本。这样的话，时光机就可以任意穿梭了。
+
+
 
 \end{document}
