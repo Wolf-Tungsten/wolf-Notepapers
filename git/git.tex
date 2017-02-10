@@ -15,12 +15,22 @@
   {\begin{quote}\kaishu\zihao{-5}}
   {\end{quote}}
   
+  
   \usepackage{listings}
   \lstset{
+frame=tbrl,
+showstringspaces=false,
 flexiblecolumns}
+
+
+
+
+
 \begin{document}
 \maketitle
+{\center 教程蓝本：《廖雪峰的git教程》
 
+网址：http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000}
 \section{安装git}
 一提到git，大佬们常说：
 \begin{myquote}
@@ -28,7 +38,7 @@ flexiblecolumns}
 \end{myquote}
 所以我们必须理解Git实际上是一个软件，同样需要安装。
 
-在Ubuntu上安装Git的命令：\verb!$sudo apt-get install git! 。（Windows和Mac上面的安装很简单，问度娘就好了）
+在Ubuntu上安装Git的命令：\lstinline!$sudo apt-get install git! 。（Windows和Mac上面的安装很简单，问度娘就好了）
 安装完成以后还需要配置账户信息
 \begin{lstlisting}[language=bash]
 $ git config --global user.name "YourName"
@@ -58,7 +68,7 @@ $ git commit -m “用于识别的附加在提交后面的消息”
 
 \subsection{版本回退}
 在Git中，可以用git log命令查看提交的版本信息，例如在编写个笔记过程中使用的log是这样的：
-\begin{verbatim}
+\begin{lstlisting}
 commit a0a5fe4e08f77bc5bf609b27575206cb7cb1ccb2
 Author: Acinonyx Tungsten <gaoruihao@outlook.com>
 Date:   Thu Feb 9 19:54:30 2017 +0800
@@ -76,15 +86,15 @@ Author: Acinonyx Tungsten <gaoruihao@outlook.com>
 Date:   Thu Feb 9 08:33:59 2017 +0800
 
     first time
-\end{verbatim}
+\end{lstlisting}
 
 这样看起来比较烦的话可以用\verb！ $ git log --pretty=oneline！，得到的结果是这样的：
-\begin{verbatim}
+\begin{lstlisting}
 wolf-tungsten@wolftungsten-ThinkPad-T460p:~/NotePapers$ git log --pretty=oneline
 a0a5fe4e08f77bc5bf609b27575206cb7cb1ccb2 1
 047711edf118019cd76d9628d3d61b6022f6b008 add a line
 41320d5047bf318ab067352bfaa5ce658646d188 first time
-\end{verbatim}
+\end{lstlisting}
 
 前面一串串的数字就是十六进制表示的版本号了（官方名称是commit id）。当我们想回退到上一个版本的时候，就可以用命令\verb!$ git reset --hard HEAD^!。其中HEAD代表当前版本，\^就代表上一个版本——以此类推\verb!$ git reset --hard HEAD^^!自然就是回退到两个版本啦。
 
@@ -116,10 +126,76 @@ git的存在相当于给文件修改添加了撤销功能，\verb!$ git checkout
 
 如果发现删错了，那么还可以用\verb!$ git checkout --文件或目录 !将其恢复为版本库中最新的版本。
 
+\section{分支管理}
+\subsection{创建与合并分支}
+这里以创建dev分支并合并到master分支并最后将其删除为例进行讲解：
+\begin{itemize}
+\zihao{5}
+\item 创建dev分支并切换到dev分支：\verb!$ git checkout -b dev!。checkout命令加上-b参数表示创建和切换。现在可以随心所欲的对dev分支进行修改，而不影响master分支的情况。
+\item 通过\verb!$ git branch!命令可以查看现有的分支。
+\item 知道了有哪些分支以后就可以再次使用\verb!$ git checkout 分支名!来切换到需要的分支。
+\item 合并分支\footnote{需要注意一般情况下是把超前的分支（本例中的dev分支）合并到滞后的分支上（本例中的master分支）。} 首先我们切换到master分支\verb!$ git checkout master!，然后使用\verb!$ git merge dev!命令最终把dev合并到当前分支上。
+\item 合并完成后就可以把dev分支删除\verb!$ git branch -d dev!。
+\end{itemize}
+由于创建dev分支后，没有再对master分支进行修改，所以合并分支的时候git自动为我们使用了“fast-forward”。后面会说明不能Fast-forward的情况以及解决办法。
 
+\subsection{冲突的产生与解决}
+在上一节中，创建了dev分支，之后所有的更改都是在dev分支上进行的。下面就要来处理：“创建dev分支后，又对master分支修改”的情况。如果直接进行合并，就会产生冲突。
+\begin{lstlisting}
+wolf-tungsten@wolftungsten-ThinkPad-T460p:~/test$ git merge dev
+自动合并 test
+冲突（内容）：合并冲突于 test
+\end{lstlisting}
+这时就要使用\verb!$ git status!命令来查看究竟是哪个文件出了问题
 
+\begin{lstlisting}
+wolf-tungsten@wolftungsten-ThinkPad-T460p:~/test$ git status
+位于分支 master
+您有尚未合并的路径。
+  （解决冲突并运行 "git commit"）
+
+未合并的路径：
+  （使用 "git add <文件>..." 标记解决方案）
+
+	双方修改：   test
+
+修改尚未加入提交（使用 "git add" 和/或 "git commit -a"）
+\end{lstlisting}
+打开冲突的test文件你会发现它变成了这样：
+\begin{lstlisting}[language=bash]
+first
+<<<<<<< HEAD
+add on master
+=======
+add in dev
+>>>>>>> dev
+\end{lstlisting}
+这其中用\verb!<<<<<<<\=======\>>>>>>>!标记出来的就是冲突的地方，按照需求修改再保存就可以正确合并了。
+
+再次提交后，用带参数的git log可以查看合并的情况：
+\begin{lstlisting}[language=bash]
+wolf-tungsten@wolftungsten-ThinkPad-T460p:~/test$ git log --graph --pretty=oneline 
+--abbrev-commit
+*   0ee2246 2on master
+|\  
+| * 0cb0c0b 2 on dev
+* | 99d0183 commit on master
+|/  
+* c59e421 1
+\end{lstlisting}
+\subsection{禁用Fast Forward}
+合并的时候如果可以使用fastforward固然很爽，但是带来的代价是，一旦我们删除分支，那么分支记录就完全丢失了。这里可以在合并的时候加入\verb！--no-ff！参数来禁用fastforward。
+
+完整的命令：\verb!git merge --no-ff -m "merge with no-ff" dev!。因为合并后会产生一个新的提交，所以还是需要-m补充提交的信息。实际开发过程应该尊崇如下的管理规则：
+\begin{myquote}
+在实际开发中，我们应该按照几个基本原则进行分支管理：
+\begin{enumerate}
+\item master分支应该是非常稳定的，也就是仅用来发布新版本，平时不能在上面干活；
+\item 干活都在dev分支上，也就是说，dev分支是不稳定的，到某个时候，比如1.0版本发布时，再把dev分支合并到master上，在master分支发布1.0版本；
+\item 每个人都在dev分支上干活，每个人都有自己的分支，时不时地往dev分支上合并就可以了
+\end{enumerate}
+\end{myquote}
 
 
 
 \end{document}
-
