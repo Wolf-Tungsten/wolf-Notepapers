@@ -183,6 +183,7 @@ wolf-tungsten@wolftungsten-ThinkPad-T460p:~/test$ git log --graph --pretty=oneli
 |/  
 * c59e421 1
 \end{lstlisting}
+
 \subsection{禁用Fast Forward}
 合并的时候如果可以使用fastforward固然很爽，但是带来的代价是，一旦我们删除分支，那么分支记录就完全丢失了。这里可以在合并的时候加入\verb！--no-ff！参数来禁用fastforward。
 
@@ -196,6 +197,42 @@ wolf-tungsten@wolftungsten-ThinkPad-T460p:~/test$ git log --graph --pretty=oneli
 \end{enumerate}
 \end{myquote}
 
+\subsection{使用stash保护工作现场}
+适用于：工作进行到一半还不适合提交，但是有需要临时去处理别的版本或者分支上的问题。
+首先使用\verb!$ git stash!命令，这时候工作区已经保存成了快照，可以放心的切换版本切换分支干其他的事情。然后，等到其他问题处理完成后，用\verb!$ git stash list!罗列以保存的工作区。
+\begin{lstlisting}[language=bash]
+$ git stash list
+stash@{0}: WIP on dev: 6224937 add merge
+\end{lstlisting}
+
+接下来有两种选择：
+\begin{itemize}
+\item 切换回工作环境：使用\verb!git stash apply!，这样切换回去以后并不会删除保存的快照，还需要\verb!git stash drop!来删除保存的快照。
+\item 使用\verb!git stash pop!，恢复的同时也把保存的快照删掉了。
+\end{itemize}
+
+还有更美好的事情，想我这种不爱收拾桌子的人，可以保存多个快照。需要恢复现场的时候用\verb!$ git stash list!罗列，再用\verb!$ git stash apply stash@{0}!恢复到指定状态就可以啦。
+
+\subsection{强行删除一个分支}
+前面说过，用\verb!git branch -d 分支!可以删除一个分支。但是这样操作的前提条件是这个分支已经合并到主分支上去了。但是有的时候可能需要“甩锅”————还没开发完成就放弃。这样的分支是不能合并到dev上去，更不能合并到master上去。要删除一个未合并的分支要用\verb!git branch -D 分支!（大写D）。
+
+\section{标签的使用}
+标签和commit是相互对应的，它的用途简单来说就commit id不便于记忆和识别，给它起个别名。
+\subsection{打标签}
+使用命令\verb!$ git tag <标签名称>!就直接给当前分支最新的版本打上了标签。
+
+使用命令\verb!$ git tag <标签名称> <commit_id>!可以给指定的commit打标签。
+
+使用命令\verb!$ git tag -a <标签名称> -m <文字说明> <commit id>!来打一个带文字说明的标签。
+
+需要查看有哪些标签的时候可以\verb!git tag!，就会列出所有打过的标签\footnote{使用这个命令列出的标签是按照字母顺序排序的，不是按照时间顺序的。} 
+
+\subsection{撕标签}
+标签打错了就比较尴尬了，不过我们还是有办法缓解尴尬。
+
+\verb!$ git tag -d <标签名称>!删除掉指定的标签。
+
+标签默认是储存在本地的，不会推送到远程版本库。如果很任性的话也可以\verb!$ git push origin <标签名称>!推送到远程库。或者一次性推送所有标签\verb!$ git push origin --tags!。一旦推送到远程，想要删除就比较麻烦：首先删除本地标签；再用\verb!$ git push origin :refs/tags/<标签名称>!删除远程标签。
 
 
 \end{document}
