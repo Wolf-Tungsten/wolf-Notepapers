@@ -1,0 +1,95 @@
+\documentclass[cyan]{elegantnote}
+
+\author{狼剩子}
+\email{gaoruihao@outlook.com}
+\zhtitle{莫名其妙的小问题}
+\entitle{Tips}
+\version{1}
+\myquote{\center 靡不有初{ }鲜克有终}
+\logo{empty.jpg}
+\cover{empty.jpg}
+
+%green color
+   \definecolor{main1}{RGB}{210,168,75}
+   \definecolor{seco1}{RGB}{9,80,3}
+   \definecolor{thid1}{RGB}{0,175,152}
+%cyan color
+   \definecolor{main2}{RGB}{239,126,30}
+   \definecolor{seco2}{RGB}{0,175,152}
+   \definecolor{thid2}{RGB}{236,74,53}
+%cyan color
+   \definecolor{main3}{RGB}{127,191,51}
+   \definecolor{seco3}{RGB}{0,145,215}
+   \definecolor{thid3}{RGB}{180,27,131}
+
+\usepackage{makecell}
+\usepackage{lipsum}
+
+%颜色的切换使用 \color{main} \color{seco} \color{thid}
+
+\usepackage{listings}
+  \usepackage{courier}
+\lstset{
+         basicstyle=\footnotesize\ttfamily, % Standardschrift
+         %numbers=left,               % Ort der Zeilennummern
+         numberstyle=\tiny,          % Stil der Zeilennummern
+         %stepnumber=2,               % Abstand zwischen den Zeilennummern
+         numbersep=5pt,              % Abstand der Nummern zum Text
+         tabsize=2,                  % Groesse von Tabs
+         extendedchars=true,         %
+         breaklines=true,            % Zeilen werden Umgebrochen
+         keywordstyle=\color{red},        
+         stringstyle=\color{white}\sunfamily, % Farbe der String
+         showspaces=false,           % Leerzeichen anzeigen ?
+         showtabs=false,             % Tabs anzeigen ?
+         xleftmargin=17pt,
+         framexleftmargin=17pt,
+         framexrightmargin=5pt,
+         framexbottommargin=4pt,
+         %backgroundcolor=\color{thid},
+         showstringspaces=false,      % Leerzeichen in Strings anzeigen ?  
+         flexiblecolumns   
+}
+\renewcommand{\lstlistingname}{CODE}
+\lstloadlanguages{% Check Dokumentation for further languages ...
+         %[Visual]Basic
+         %Pascal
+         %C
+         %C++
+         %XML
+         %HTML
+         Bash
+}
+  \usepackage{caption}
+\DeclareCaptionFont{white}{\color{white}}
+\DeclareCaptionFormat{listing}{\colorbox{main}{\parbox{\textwidth}{#1#2#3}}}
+\captionsetup[lstlisting]{format=listing,justification=raggedright,labelfont=white,textfont=white, singlelinecheck=false, margin=0pt, font={sf,bf,footnotesize}}
+
+
+\begin{document}
+\maketitle
+\tableofcontents
+\chapter{linux使用}
+\section{Ubuntu无法找到add-apt-repository问题的解决方法}
+\begin{lstlisting}[caption=bash commands,language=bash]
+$apt-get install python-software-properties 
+$apt-get install software-properties-common 
+\end{lstlisting}
+然后就可以使用\verb!add-apt-repository!了。
+
+\section{E: 无法获得锁 /var/lib/apt/lists/lock - open (11: 资源暂时不可用)}
+
+\begin{enumerate}
+\item ​方法一：执行一下 \verb!sudo dpkg --configure -a!
+\item 方法二：\verb!sudo rm /var/lib/apt/lists/lock!
+\item 方法三：
+1、\verb!ps-aux! 查出apt-get进程的PID,
+2、用\verb!sudo kill PID代码! 杀死进程(找出带apt字样的进程格杀勿论)
+\end{enumerate}
+
+
+
+
+
+
+\end{document}

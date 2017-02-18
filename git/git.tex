@@ -3,25 +3,56 @@
 \defaultfontfeatures{Mapping=tex-text}
 \usepackage{xunicode}
 \usepackage{xltxtra}
-%\setmainfont{???}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
-\author{高睿昊}
+\author{狼剩子}
 \title{\zihao{0}\heiti Git学习笔记}
 \newenvironment{myquote}
   {\begin{quote}\kaishu\zihao{-5}}
   {\end{quote}}
   
-  
-  \usepackage{listings}
-  \lstset{
-frame=tbrl,
-showstringspaces=false,
-flexiblecolumns}
 
+
+\usepackage{listings}
+  \usepackage{courier}
+\lstset{
+         basicstyle=\footnotesize\ttfamily, % Standardschrift
+         %numbers=left,               % Ort der Zeilennummern
+         numberstyle=\tiny,          % Stil der Zeilennummern
+         %stepnumber=2,               % Abstand zwischen den Zeilennummern
+         numbersep=5pt,              % Abstand der Nummern zum Text
+         tabsize=2,                  % Groesse von Tabs
+         extendedchars=true,         %
+         breaklines=true,            % Zeilen werden Umgebrochen
+         keywordstyle=\color{red},        
+         stringstyle=\color{white}\sunfamily, % Farbe der String
+         showspaces=false,           % Leerzeichen anzeigen ?
+         showtabs=false,             % Tabs anzeigen ?
+         xleftmargin=17pt,
+         framexleftmargin=17pt,
+         framexrightmargin=5pt,
+         framexbottommargin=4pt,
+         %backgroundcolor=\color{thid},
+         showstringspaces=false,      % Leerzeichen in Strings anzeigen ?  
+         flexiblecolumns     
+}
+\renewcommand{\lstlistingname}{CODE}
+\lstloadlanguages{% Check Dokumentation for further languages ...
+         %[Visual]Basic
+         %Pascal
+         %C
+         %C++
+         %XML
+         %HTML
+         Bash
+}
+  \usepackage{caption}
+\DeclareCaptionFont{white}{\color{white}}
+\DeclareCaptionFormat{listing}{\colorbox{main}{\parbox{\textwidth}{#1#2#3}}}
+\captionsetup[lstlisting]{format=listing,justification=raggedright,labelfont=white,textfont=white, singlelinecheck=false, margin=0pt, font={sf,bf,footnotesize}}
 
 
 
@@ -36,6 +67,11 @@ flexiblecolumns}
 \begin{myquote}
 \kaishu “Git是目前世界上最先进的分布式版本控制系统”
 \end{myquote}
+
+
+
+
+
 所以我们必须理解Git实际上是一个软件，同样需要安装。
 
 在Ubuntu上安装Git的命令：\lstinline!$sudo apt-get install git! 。（Windows和Mac上面的安装很简单，问度娘就好了）
@@ -47,15 +83,15 @@ $ git config --global user.email "email@example.com"
 
 \section{创建版本库}
 在需要Git管理的目录下执行命令：
-\begin{lstlisting}[language=bash]
+\begin{lstlisting}[caption=bash command]
 $ git init
 \end{lstlisting}
 对于需要Git管理的目录需要使用add命令进行处理
-\begin{lstlisting}[language=bash]
+\begin{lstlisting}[caption=bash command]
 $ git add 文件名或者目录名
 \end{lstlisting}
 最后使用commit命令即可提交到版本库
-\begin{lstlisting}[language=bash]
+\begin{lstlisting}[caption=bash command]
 $ git commit -m “用于识别的附加在提交后面的消息”
 \end{lstlisting}
 
@@ -99,7 +135,7 @@ a0a5fe4e08f77bc5bf609b27575206cb7cb1ccb2 1
 前面一串串的数字就是十六进制表示的版本号了（官方名称是commit id）。当我们想回退到上一个版本的时候，就可以用命令\verb!$ git reset --hard HEAD^!。其中HEAD代表当前版本，\^就代表上一个版本——以此类推\verb!$ git reset --hard HEAD^^!自然就是回退到两个版本啦。
 
 现在我们相当于从21世纪回到了19世纪，那我们要如何再从19实际回到21世纪呢？这时候刚才看起来烦人的commit id就有大用了。首先我们使用\verb!$ git reflog !命令来查看各个提交版本的commit id：
-\begin{lstlisting}[language=bash]
+\begin{lstlisting}[caption=bash command]
 wolf-tungsten@wolftungsten-ThinkPad-T460p:~/NotePapers$ git reflog
 a0a5fe4 HEAD@{0}: commit: 1
 047711e HEAD@{1}: commit: add a line
@@ -162,7 +198,7 @@ wolf-tungsten@wolftungsten-ThinkPad-T460p:~/test$ git status
 修改尚未加入提交（使用 "git add" 和/或 "git commit -a"）
 \end{lstlisting}
 打开冲突的test文件你会发现它变成了这样：
-\begin{lstlisting}[language=bash]
+\begin{lstlisting}[caption=bash command]
 first
 <<<<<<< HEAD
 add on master
@@ -173,7 +209,7 @@ add in dev
 这其中用\verb!<<<<<<<\=======\>>>>>>>!标记出来的就是冲突的地方，按照需求修改再保存就可以正确合并了。
 
 再次提交后，用带参数的git log可以查看合并的情况：
-\begin{lstlisting}[language=bash]
+\begin{lstlisting}[caption=bash command]
 wolf-tungsten@wolftungsten-ThinkPad-T460p:~/test$ git log --graph --pretty=oneline 
 --abbrev-commit
 *   0ee2246 2on master
@@ -200,7 +236,7 @@ wolf-tungsten@wolftungsten-ThinkPad-T460p:~/test$ git log --graph --pretty=oneli
 \subsection{使用stash保护工作现场}
 适用于：工作进行到一半还不适合提交，但是有需要临时去处理别的版本或者分支上的问题。
 首先使用\verb!$ git stash!命令，这时候工作区已经保存成了快照，可以放心的切换版本切换分支干其他的事情。然后，等到其他问题处理完成后，用\verb!$ git stash list!罗列以保存的工作区。
-\begin{lstlisting}[language=bash]
+\begin{lstlisting}[caption=bash command]
 $ git stash list
 stash@{0}: WIP on dev: 6224937 add merge
 \end{lstlisting}
@@ -228,11 +264,22 @@ stash@{0}: WIP on dev: 6224937 add merge
 需要查看有哪些标签的时候可以\verb!git tag!，就会列出所有打过的标签\footnote{使用这个命令列出的标签是按照字母顺序排序的，不是按照时间顺序的。} 
 
 \subsection{撕标签}
-标签打错了就比较尴尬了，不过我们还是有办法缓解尴尬。
+标签打错了就比较尴尬了，不过还是有办法缓解尴尬。
 
 \verb!$ git tag -d <标签名称>!删除掉指定的标签。
 
 标签默认是储存在本地的，不会推送到远程版本库。如果很任性的话也可以\verb!$ git push origin <标签名称>!推送到远程库。或者一次性推送所有标签\verb!$ git push origin --tags!。一旦推送到远程，想要删除就比较麻烦：首先删除本地标签；再用\verb!$ git push origin :refs/tags/<标签名称>!删除远程标签。
+
+
+\section{远程仓库以及github的使用}
+\subsection{如何和github产生py关系}
+\begin{itemize}
+\item 执行bash命令\verb!ssh-keygen -t rsa -C "youremail@example.com"!，然后就可以在home目录下找到一个.ssh 文件夹，其中包含有一个\verb!id_rsa.pub!文件,复制其中的全部内容。
+\item 登陆GitHub，打开“Account settings”，“SSH Keys”页面，点“Add SSH Key”，填上任意Title，在Key文本框里粘贴\verb!id_rsa.pub!文件的内容，点“Add Key”就可以了。
+\end{itemize}
+\subsection{克隆远程仓库到本地}
+在本地要存放仓库的地方使用命令\verb!$ git clone git@github.com:用户名/仓库名.git!。可以找到当前操作目录下面多出来一个以仓库名命名的文件夹，实际上就是完整的git仓库。
+
 
 
 \end{document}
