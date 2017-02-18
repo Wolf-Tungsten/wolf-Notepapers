@@ -28,6 +28,45 @@
 %颜色的切换使用 \color{main} \color{seco} \color{thid}
 
 
+\usepackage{listings}
+  \usepackage{courier}
+\lstset{
+         basicstyle=\footnotesize\ttfamily, % Standardschrift
+         %numbers=left,               % Ort der Zeilennummern
+         numberstyle=\tiny,          % Stil der Zeilennummern
+         %stepnumber=2,               % Abstand zwischen den Zeilennummern
+         numbersep=5pt,              % Abstand der Nummern zum Text
+         tabsize=2,                  % Groesse von Tabs
+         extendedchars=true,         %
+         breaklines=true,            % Zeilen werden Umgebrochen
+         keywordstyle=\color{red},        
+         stringstyle=\color{white}\sunfamily, % Farbe der String
+         showspaces=false,           % Leerzeichen anzeigen ?
+         showtabs=false,             % Tabs anzeigen ?
+         xleftmargin=17pt,
+         framexleftmargin=17pt,
+         framexrightmargin=5pt,
+         framexbottommargin=4pt,
+         %backgroundcolor=\color{thid},
+         showstringspaces=false,      % Leerzeichen in Strings anzeigen ?  
+         flexiblecolumns   
+}
+\renewcommand{\lstlistingname}{CODE}
+\lstloadlanguages{% Check Dokumentation for further languages ...
+         %[Visual]Basic
+         %Pascal
+         %C
+         %C++
+         %XML
+         %HTML
+         Bash
+}
+  \usepackage{caption}
+\DeclareCaptionFont{white}{\color{white}}
+\DeclareCaptionFormat{listing}{\colorbox{main}{\parbox{\textwidth}{#1#2#3}}}
+\captionsetup[lstlisting]{format=listing,justification=raggedright,labelfont=white,textfont=white, singlelinecheck=false, margin=0pt, font={sf,bf,footnotesize}}
+
+
 
 
 \begin{document}
@@ -38,7 +77,113 @@
 \section{相关服务的配置}
 \subsection{编译安装 python3.6.0}
 \subsection{Nginx的安装及使用}
-\subsection{uwsgi的安装及使用}
+
+我在阿里云使用的是CentOS7，所以下面的步骤都是按照这个系统的操作来进行的，对于Ubuntu/Debian系列的系统可能会在后续作补充。
+
+\textbf{Nginx的安装}：\verb!$ yum install -y nginx!。不出意外一步搞定。
+
+\textbf{Nginx配置}：
+配置文件位于\verb!\etc\nginx\nginx.conf!；下面抽取文件最关键部分(基本上按照下面这个修改就可以了）。
+\begin{lstlisting}[language=bash,caption=nginx.conf]
+server {
+        listen       80 default_server;
+        listen       [::]:80 default_server;
+        server_name  _;
+        index index.html;
+        root        /root/webroot/;
+
+        # Load configuration files for the default server block.
+        include /etc/nginx/default.d/*.conf;
+
+        location / {
+                root /root/webroot/page;
+                index index.html;
+        }
+
+\end{lstlisting}
+
+
+\textbf{需要修改的内容如下}
+\begin{itemize}
+\item 第一行添加\verb!user root;!
+\item server下面两个listen后面的80指端口号，按照需要修改
+\item 第一个root指定网站的根目录
+\item 下面location就是指定URL后面的path了
+\item 也需要指定root属性
+\item index属性指定访问当前URL默认的页面
+\end{itemize}
+
+\textbf{服务的启动、停止、重新载入}
+\begin{itemize}
+\item \textbf{启动服务}\verb!# service nginx start!
+\item \textbf{重启或者重新载入配置文件}\verb!# service nginx restart !，或者\verb!# nginx -s reload !
+\item \textbf{停止服务}\verb!# service nginx stop!，或者\verb！# nginx -s quit！
+\end{itemize}
+
+
+\subsection{uWSGI的安装及使用}
+\textbf{简易步骤}
+
+uWSGI的安装（简单粗暴）：\verb|sudo pip install uwsgi|
+
+使uWSGI和Django项目产生py关系：
+\begin{enumerate}
+\item 在Django项目目录(就是存放有manage.py的目录）下面新建一个配置文件\verb|uwsgi.ini|,文件内容如下：
+\begin{lstlisting}[language=bash,caption=uwsgi.ini]
+[uwsgi] 
+chdir=/path/to/your/project 包含manage.py 的文件夹 
+module=mysite.wsgi:application  
+master=True 
+pidfile=/tmp/project-master.pid 
+vacuum=True 
+max-requests=5000 
+socket=127.0.0.1:5000
+\end{lstlisting}
+\item 然后在当前目录下使用命令：\verb|$ uwsgi --ini uwsgi.ini --http（此处应有一个空格） ：端口|
+\item 如果遇到端口被占用的情况：首先\verb！$ netstat -lnp|grep 端口号 ！获取到占该端口进程的pid，然后\verb|$ kill -9 pid |干掉就可以了。
+\end{enumerate}
 \subsection{Nginx与uwsgi链接}
-uwsgi的安装：
+首先创建\verb|uwsgi_params|文件，文件内容如下：
+\begin{lstlisting}[language=bash,caption=uwsgi]
+uwsgi_param  QUERY_STRING       $query_string;
+uwsgi_param  REQUEST_METHOD     $request_method;
+uwsgi_param  CONTENT_TYPE       $content_type;
+uwsgi_param  CONTENT_LENGTH     $content_length;
+
+uwsgi_param  REQUEST_URI        $request_uri;
+uwsgi_param  PATH_INFO          $document_uri;
+uwsgi_param  DOCUMENT_ROOT      $document_root;
+uwsgi_param  SERVER_PROTOCOL    $server_protocol;
+uwsgi_param  REQUEST_SCHEME     $scheme;
+uwsgi_param  HTTPS              $https if_not_empty;
+
+uwsgi_param  REMOTE_ADDR        $remote_addr;
+uwsgi_param  REMOTE_PORT        $remote_port;
+uwsgi_param  SERVER_PORT        $server_port;
+uwsgi_param  SERVER_NAME        $server_name;
+\end{lstlisting}
+
+配置nginx，修改\verb!\etc\nginx\nginx.conf!
+\begin{lstlisting}[language=bash,caption=和uwsgi建立了关系的nginx配置]
+server {
+        listen       80;
+        server_name  112.74.49.113;
+        index index.html;
+        root        /root/webroot/;
+
+        # Load configuration files for the default server block.
+        include /etc/nginx/default.d/*.conf;
+
+        location / {
+                include /root/iGuideCar/uwsgi_params;
+                uwsgi_pass 127.0.0.1:5000;
+        }
+\end{lstlisting}
+\begin{itemize}
+\item include后面指向刚才写好的uwsgi\_params
+\item uwsgi pass 后面填写的内容\textbf{一定必须千千万万}和uwsgi.ini中写的socket\textbf{一毛一样}(就被这个地方坑了一晚上）
+\item 每个行后面要写分号（这个也坑了一下）
+\end{itemize}
+
+启动uwsgi服务，启动nginx服务就搞定了QAQ。
 \end{document}
